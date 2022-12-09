@@ -2424,17 +2424,29 @@ function getstaticmodule() {
 
     cd /home/tc
 
-    if [ -d /home/tc/custom-module ] && [ -f /home/tc/custom-module/redpill.ko ]; then
-        echo "Found custom redpill module, do you want to use this instead ? [yY/nN] : "
-        read answer
+    if [ "${TARGET_PLATFORM}" = "ds918p" ]; then
+          sudo curl -k --location --progress-bar "https://github.com/PeterSuh-Q3/rp-ext/raw/main/redpill/releases/redpill-4.4.180plus.tgz" --output /home/tc/custom-module/redpill.ko.tgz
+           sudo tar -zxvf /home/tc/custom-module/redpill.ko.tgz -C /home/tc/custom-module/
+        elif [ "${TARGET_PLATFORM}" = "ds920p" ]; then
+                 sudo curl -k --location --progress-bar "https://github.com/PeterSuh-Q3/rp-ext/raw/main/redpill/releases/redpill-4.4.180plus-geminilake.tgz" --output /home/tc/custom-module/redpill.ko.tgz
+                 sudo tar -zxvf /home/tc/custom-module/redpill.ko.tgz -C /home/tc/custom-module/     
+        elif [ "${TARGET_PLATFORM}" = "ds1621p" ]; then
+                 sudo curl -k --location --progress-bar "https://github.com/PeterSuh-Q3/rp-ext/raw/main/redpill/releases/redpill-4.4.180plus-v1000.tgz" --output /home/tc/custom-module/redpill.ko.tgz
+                 sudo tar -zxvf /home/tc/custom-module/redpill.ko.tgz -C /home/tc/custom-module/
+        else 
+                 sudo curl -k --location --progress-bar "https://github.com/PeterSuh-Q3/rp-ext/raw/main/redpill/releases/redpill-4.4.180plus-geminilake.tgz" --output /home/tc/custom-module/redpill.ko.tgz
+                 sudo tar -zxvf /home/tc/custom-module/redpill.ko.tgz -C /home/tc/custom-module/  
+      fi
+     sudo rm -f /home/tc/custom-module/*.tgz    
+      
 
-        if [ "$answer" == "y" ] || [ "$answer" == "Y" ]; then
+    if [ -d /home/tc/custom-module ] && [ -f /home/tc/custom-module/redpill.ko ]; then
+        echo "Found custom redpill.ko module!! "
             REDPILL_MOD_NAME="redpill-linux-v$(modinfo /home/tc/custom-module/redpill.ko | grep vermagic | awk '{print $2}').ko"
             cp /home/tc/custom-module/redpill.ko /home/tc/redpill-load/ext/rp-lkm/${REDPILL_MOD_NAME}
             strip --strip-debug /home/tc/redpill-load/ext/rp-lkm/${REDPILL_MOD_NAME}
+            sudo rm -f /home/tc/custom-module/*.ko
             return
-        fi
-
     fi
 
     echo "Removing any old redpill.ko modules"
