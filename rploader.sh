@@ -24,7 +24,7 @@ timezone="UTC"
 ntpserver="pool.ntp.org"
 userconfigfile="/home/tc/user_config.json"
 
-fullupdatefiles="custom_config.json custom_config_jun.json global_config.json modules.alias.3.json.gz modules.alias.4.json.gz rpext-index.json user_config.json rploader.sh"
+fullupdatefiles="custom_config.json custom_config_jun.json global_config.json modules.alias.3.json.gz modules.alias.4.json.gz rpext-index.json rploader.sh"
 
 # END Do not modify after this line
 ######################################################################################################
