@@ -1544,18 +1544,12 @@ function patchdtc() {
         ./dtc -q -I dts -O dtb /home/tc/custom-module/${dtbfile}.dts >/home/tc/custom-module/model_${dtbfile}.dtb
         if [ "${TARGET_PLATFORM}" = "ds920p" ]; then
            cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds920*/
-        elif [ "${TARGET_PLATFORM}" = "ds923p" ]; then
-           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds923*/
         elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
            cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds1520*/
         elif [ "${TARGET_PLATFORM}" = "ds1621p" ]; then
            cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds1621*/  
-        elif [ "${TARGET_PLATFORM}" = "ds2422p" ]; then
-           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds2422*/
-        elif [ "${TARGET_PLATFORM}" = "dva1622" ]; then
-           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/dva1622*/   
         else
-           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/fs2500*/ 
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/dva1622*/   
         fi
     fi
     
