@@ -593,8 +593,8 @@ function addrequiredexts() {
         cd /home/tc/redpill-load/ && ./ext-manager.sh _update_platform_exts ${SYNOMODEL} ${extension}
     done
 
-    if [ ${TARGET_PLATFORM} = "geminilake" ] || [ ${TARGET_PLATFORM} = "v1000" ] || [ ${TARGET_PLATFORM} = "dva1622" ] || [ ${TARGET_PLATFORM} = "ds2422p" ] || [ ${TARGET_PLATFORM} = "rs4021xsp" ]; then
-        #patchdtc
+    if [ ${TARGET_PLATFORM} = "ds920p" ] || [ ${TARGET_PLATFORM} = "ds1621p" ] || [ ${TARGET_PLATFORM} = "dva1622" ] || [ ${TARGET_PLATFORM} = "ds2422p" ] || [ ${TARGET_PLATFORM} = "rs4021xsp" ]; then
+        patchdtc
         echo "Patch dtc is superseded by fbelavenuto dtbpatch"
     fi
 
@@ -1512,13 +1512,20 @@ function patchdtc() {
     usbvid=$(cat user_config.json | jq '.extra_cmdline .vid' | sed -e 's/"//g' | sed -e 's/0x//g')
     loaderusb=$(lsusb | grep "${usbvid}:${usbpid}" | awk '{print $2 "-"  $4 }' | sed -e 's/://g' | sed -s 's/00//g')
 
-    if [ "${TARGET_PLATFORM}" = "v1000" ]; then
-        dtbfile="ds1621p"
-    elif [ "${TARGET_PLATFORM}" = "geminilake" ]; then
+    if [ "${TARGET_PLATFORM}" = "ds920p" ]; then
         dtbfile="ds920p"
+    elif [ "${TARGET_PLATFORM}" = "ds923p" ]; then
+        dtbfile="ds923p"    
+    elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
+        dtbfile="ds1520p"    
+    elif [ "${TARGET_PLATFORM}" = "ds1621p" ]; then
+        dtbfile="ds1621p"
+    elif [ "${TARGET_PLATFORM}" = "ds2422p" ]; then
+        dtbfile="ds2422p"
     elif [ "${TARGET_PLATFORM}" = "dva1622" ]; then
         dtbfile="dva1622"
-
+    elif [ "${TARGET_PLATFORM}" = "fs2500" ]; then
+        dtbfile="fs2500"    
     else
         echo "${TARGET_PLATFORM} does not require model.dtc patching "
         return
@@ -1534,129 +1541,24 @@ function patchdtc() {
 
     if [ -f /home/tc/custom-module/${dtbfile}.dts ] && [ ! -f /home/tc/custom-module/${dtbfile}.dtb ]; then
         echo "Found locally cached dts file ${dtbfile}.dts and dtb file does not exist in cache, converting dts to dtb"
-        ./dtc -q -I dts -O dtb /home/tc/custom-module/${dtbfile}.dts >/home/tc/custom-module/${dtbfile}.dtb
-    fi
-
-    if [ -f /home/tc/custom-module/${dtbfile}.dtb ]; then
-
-        echo "Fould locally cached dtb file"
-        read -p "Should i use that file ? [Yy/Nn]" answer
-        if [ -n "$answer" ] && [ "$answer" = "Y" ] || [ "$answer" = "y" ]; then
-            echo "OK copying over the cached dtb file"
-
-            dtbextfile="$(find /home/tc/redpill-load/custom -name model_${dtbfile}.dtb)"
-            if [ ! -z ${dtbextfile} ] && [ -f ${dtbextfile} ]; then
-                echo -n "Copying patched dtb file ${dtbfile}.dtb to ${dtbextfile} -> "
-                sudo cp /home/tc/custom-module/${dtbfile}.dtb ${dtbextfile}
-                if [ $(sha256sum /home/tc/custom-module/${dtbfile}.dtb | awk '{print $1}') = $(sha256sum ${dtbextfile} | awk '{print $1}') ]; then
-                    echo -e "OK ! File copied and verified !"
-                    return
-                else
-                    echo -e "ERROR !\nFile has not been copied succesfully, you will need to copy it yourself"
-                    return
-                fi
-            else
-                [ -z ${dtbextfile} ] && echo "dtb extension is not loaded and its required for DSM to find disks on ${SYNOMODEL}"
-                echo "Copy of the DTB file ${dtbfile}.dtb to ${dtbextfile} was not succesfull."
-                echo "Please remember to replace the dtb extension model file ..."
-                echo "execute manually : cp ${dtbfile}.dtb ${dtbextfile} and re-run"
-                exit 99
-            fi
+        ./dtc -q -I dts -O dtb /home/tc/custom-module/${dtbfile}.dts >/home/tc/custom-module/model_${dtbfile}.dtb
+        if [ "${TARGET_PLATFORM}" = "ds920p" ]; then
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds920*/
+        elif [ "${TARGET_PLATFORM}" = "ds923p" ]; then
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds923*/
+        elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds1520*/
+        elif [ "${TARGET_PLATFORM}" = "ds1621p" ]; then
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds1621*/  
+        elif [ "${TARGET_PLATFORM}" = "ds2422p" ]; then
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds2422*/
+        elif [ "${TARGET_PLATFORM}" = "dva1622" ]; then
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/dva1622*/   
         else
-            echo "OK lets continue patching"
+           cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/fs2500*/ 
         fi
-    else
-        echo "No cached dtb file found in /home/tc/custom-module/${dtbfile}.dtb"
     fi
-
-    if [ ! -f ${dtbfile}.dts ]; then
-        echo "dts file for ${dtbfile} not found, trying to download"
-        curl --insecure --location --progress-bar -O "${dtsfiles}/${dtbfile}.dts"
-    fi
-
-    echo "Found $(echo $localdisks | wc -w) disks and $(echo $localnvme | wc -w) nvme"
-    let diskslot=1
-    echo "Collecting disk paths"
-
-    for disk in $localdisks; do
-        diskdepth=$(udevadm info --query path --name $disk | awk -F"/" '{print NF-1}')
-        if [[ $diskdepth = 9 ]]; then
-            diskpath=$(udevadm info --query path --name $disk | awk -F "/" '{print $4 ":" $5 }' | awk -F ":" '{print $2 ":" $3 }')
-        elif [[ $diskdepth = 11 ]]; then
-            diskpath=$(udevadm info --query path --name $disk | awk -F "/" '{print $4 ":" $5 ":" $6 }' | awk -F ":" '{print $2 ":" $3 "," $6 "," $9 }')
-        else
-            diskpath=$(udevadm info --query path --name $disk | awk -F "/" '{print $4 ":" $5 }' | awk -F ":" '{print $2 ":" $3 "," $6}')
-        fi
-        #diskpath=$(udevadm info --query path --name $disk | awk -F "\/" '{print $4 ":" $5 }' | awk -F ":" '{print $2 ":" $3 "," $6}' | sed 's/,*$//')
-        if [ "$HYPERVISOR" == "VMware" ]; then
-            diskport=$(udevadm info --query path --name $disk | sed -n '/target/{s/.*target//;p;}' | awk -F: '{print $1}')
-            diskport=$(($diskport - 30)) && diskport=$(printf "%x" $diskport)
-        else
-            diskport=$(udevadm info --query path --name $disk | sed -n '/target/{s/.*target//;p;}' | awk -F: '{print $1}')
-            diskport=$(printf "%x" $diskport)
-        fi
-
-        echo "Found local disk $disk with path $diskpath, adding into internal_slot $diskslot with portnumber $diskport"
-        if [ "${dtbfile}" == "ds920p" ] || [ "${dtbfile}" == "dva1622" ]; then
-            sed -i "/internal_slot\@${diskslot} {/!b;n;n;n;n;n;n;n;cpcie_root = \"$diskpath\";" ${dtbfile}.dts
-            sed -i "/internal_slot\@${diskslot} {/!b;n;n;n;n;n;n;n;n;cata_port = <0x$diskport>;" ${dtbfile}.dts
-            let diskslot=$diskslot+1
-        else
-            sed -i "/internal_slot\@${diskslot} {/!b;n;n;n;n;n;cpcie_root = \"$diskpath\";" ${dtbfile}.dts
-            sed -i "/internal_slot\@${diskslot} {/!b;n;n;n;n;n;n;cata_port = <0x$diskport>;" ${dtbfile}.dts
-            let diskslot=$diskslot+1
-        fi
-
-    done
-
-    if [ $(echo $localnvme | wc -w) -gt 0 ]; then
-        let nvmeslot=1
-        echo "Collecting nvme paths"
-
-        for nvme in $localnvme; do
-            nvmepath=$(udevadm info --query path --name $nvme | awk -F "\/" '{print $4 ":" $5 }' | awk -F ":" '{print $2 ":" $3 "," $6}' | sed 's/,*$//')
-            echo "Found local nvme $nvme with path $nvmepath, adding into m2_card $nvmeslot"
-            if [ "${dtbfile}" == "ds920p" ]; then
-                sed -i "/nvme_slot\@${nvmeslot} {/!b;n;cpcie_root = \"$nvmepath\";" ${dtbfile}.dts
-                let diskslot=$diskslot+1
-            else
-                sed -i "/m2_card\@${nvmeslot} {/!b;n;n;n;cpcie_root = \"$nvmepath\";" ${dtbfile}.dts
-                let nvmeslot=$diskslot+1
-            fi
-        done
-
-    else
-        echo "NO NVME disks found, returning"
-    fi
-
-    if
-        [ ! -z $loaderusb ] && [ -n $loaderusb ]
-    then
-        echo "Patching USB to include your loader. Loader found in ${loaderusb} port"
-        sed -i "/usb_slot\@1 {/!b;n;n;n;n;n;n;n;cusb_port = \"${loaderusb}\";" ${dtbfile}.dts
-    else
-        echo "Your loader is not in USB, i will not try to patch dtb for USB"
-    fi
-
-    echo "Converting dts file : ${dtbfile}.dts to dtb file : >${dtbfile}.dtb "
-    ./dtc -q -I dts -O dtb ${dtbfile}.dts >${dtbfile}.dtb
-
-    dtbextfile="$(find /home/tc/redpill-load/custom -name model_${dtbfile}.dtb)"
-    if [ ! -z ${dtbextfile} ] && [ -f ${dtbextfile} ]; then
-        echo -n "Copying patched dtb file ${dtbfile}.dtb to ${dtbextfile} -> "
-        sudo cp ${dtbfile}.dtb ${dtbextfile}
-        if [ $(sha256sum ${dtbfile}.dtb | awk '{print $1}') = $(sha256sum ${dtbextfile} | awk '{print $1}') ]; then
-            echo -e "OK ! File copied and verified !"
-        else
-            echo -e "ERROR !\nFile has not been copied succesfully, you will need to copy it yourself"
-        fi
-    else
-        [ -z ${dtbextfile} ] && echo "dtb extension is not loaded and its required for DSM to find disks on ${SYNOMODEL}"
-        echo "Copy of the DTB file ${dtbfile}.dtb to ${dtbextfile} was not succesfull."
-        echo "Please remember to replace the dtb extension model file ..."
-        echo "execute manually : cp ${dtbfile}.dtb ${dtbextfile} and re-run"
-        exit 99
-    fi
+    
 }
 
 function mountshare() {
@@ -3215,7 +3117,7 @@ if [ -z "$GATEWAY_INTERFACE" ]; then
 
         getvars $2
         checkinternet
-        getlatestrploader
+        #getlatestrploader
         gitdownload
 
         [ "$3" = "withfriend" ] && echo "withfriend option set, My friend will be added" && WITHFRIEND="YES"
@@ -3252,7 +3154,7 @@ if [ -z "$GATEWAY_INTERFACE" ]; then
             echo "Using static compiled redpill extension"
             getstaticmodule
             echo "Got $REDPILL_MOD_NAME "
-            listmodules
+            #listmodules
             echo "Starting loader creation "
             buildloader junmod
             [ $? -eq 0 ] && savesession
@@ -3263,7 +3165,7 @@ if [ -z "$GATEWAY_INTERFACE" ]; then
             echo "Using static compiled redpill extension"
             getstaticmodule
             echo "Got $REDPILL_MOD_NAME "
-            listmodules
+            #listmodules
             echo "Starting loader creation "
             buildloader
             [ $? -eq 0 ] && savesession
