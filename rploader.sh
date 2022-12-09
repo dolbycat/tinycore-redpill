@@ -11,8 +11,8 @@ rploaderver="0.9.3.0"
 build="main"
 redpillmake="prod"
 
-rploaderfile="https://raw.githubusercontent.com/pocopico/tinycore-redpill/$build/rploader.sh"
-rploaderrepo="https://github.com/pocopico/tinycore-redpill/raw/$build/"
+rploaderfile="https://raw.githubusercontent.com/dolbycat/tinycore-redpill/$build/rploader.sh"
+rploaderrepo="https://github.com/dolbycat/tinycore-redpill/raw/$build/"
 
 redpillextension="https://github.com/pocopico/rp-ext/raw/main/redpill${redpillmake}/rpext-index.json"
 modextention="https://github.com/pocopico/rp-ext/raw/main/rpext-index.json"
