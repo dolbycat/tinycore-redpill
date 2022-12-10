@@ -2902,7 +2902,7 @@ function getvars() {
         KERNEL_MAJOR="3"
         MODULE_ALIAS_FILE="modules.alias.3.json"
         ;;
-    apollolake | broadwell | broadwellnk | ds1520 | v1000 | denverton | geminilake | dva1622 | ds2422p | rs4021xsp | *)
+    apollolake | broadwell | broadwellnk | ds1520p | v1000 | denverton | geminilake | dva1622 | ds2422p | rs4021xsp | *)
         KERNEL_MAJOR="4"
         MODULE_ALIAS_FILE="modules.alias.4.json"
         ;;
