@@ -1875,7 +1875,7 @@ function serialgen() {
 
     [ "$2" == "realmac" ] && let keepmac=1 || let keepmac=0
 
-    if [ "$1" = "DS3615xs" ] || [ "$1" = "DS3617xs" ] || [ "$1" = "DS916+" ] || [ "$1" = "DS918+" ] || [ "$1" = "DS920+" ] || [ "$1" = "DS3622xs+" ] || [ "$1" = "FS6400" ] || [ "$1" = "DVA3219" ] || [ "$1" = "DVA3221" ] || [ "$1" = "DS1621+" ] || [ "$1" = "DVA1622" ] || [ "$1" = "DS2422+" ] || [ "$1" = "RS4021xs+" ]; then
+    if [ "$1" = "DS3615xs" ] || [ "$1" = "DS3617xs" ] || [ "$1" = "DS916+" ] || [ "$1" = "DS918+" ] || [ "$1" = "DS1019+" ] || [ "$1" = "DS920+" ] || [ "$1" = "DS923+" ] || [ "$1" = "DS3622xs+" ] || [ "$1" = "FS6400" ] || [ "$1" = "DVA3219" ] || [ "$1" = "DVA3221" ] || [ "$1" = "DS1621+" ] || [ "$1" = "DS1621xs+" ] || [ "$1" = "RS4021xs+" ] || [ "$1" = "DS2422+" ] || [ "$1" = "DS1520+" ] || [ "$1" = "FS2500" ] || [ "$1" = "RS3618xs" ] || [ "$1" = "RS3413xs+" ] ; then
         serial="$(generateSerial $1)"
         mac="$(generateMacAddress $1)"
         realmac=$(ifconfig eth0 | head -1 | awk '{print $NF}')
@@ -1941,6 +1941,10 @@ function beginArray() {
         permanent="SQR"
         serialstart="2030 2040 20C0 2150"
         ;;
+    DS1520+)
+        permanent="SBR"
+        serialstart="2030 2040 20C0 2150"
+        ;;        
     DS1621+)
         permanent="S7R"
         serialstart="2080"
@@ -2032,6 +2036,9 @@ function generateSerial() {
     DS3622xs+)
         serialnum=$(toupper "$(echo "$serialstart" | tr ' ' '\n' | sort -R | tail -1)$permanent"$(generateRandomLetter)$(generateRandomValue)$(generateRandomValue)$(generateRandomValue)$(generateRandomValue)$(generateRandomLetter))
         ;;
+    DS1520+)
+        serialnum=$(toupper "$(echo "$serialstart" | tr ' ' '\n' | sort -R | tail -1)$permanent"$(generateRandomLetter)$(generateRandomValue)$(generateRandomValue)$(generateRandomValue)$(generateRandomValue)$(generateRandomLetter))
+        ;;    
     DS1621+)
         serialnum=$(toupper "$(echo "$serialstart" | tr ' ' '\n' | sort -R | tail -1)$permanent"$(generateRandomLetter)$(generateRandomValue)$(generateRandomValue)$(generateRandomValue)$(generateRandomValue)$(generateRandomLetter))
         ;;
@@ -2829,6 +2836,8 @@ function setplatform() {
         SYNOMODEL="dva3221_$TARGET_REVISION" && MODEL="DVA3221"
     elif [ "${TARGET_PLATFORM}" = "geminilake" ] || [ "${TARGET_PLATFORM}" = "ds920p" ]; then
         SYNOMODEL="ds920p_$TARGET_REVISION" && MODEL="DS920+"
+    elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
+        SYNOMODEL="ds1520p_$TARGET_REVISION" && MODEL="DS1520+"    
     elif [ "${TARGET_PLATFORM}" = "dva1622" ]; then
         SYNOMODEL="dva1622_$TARGET_REVISION" && MODEL="DVA1622"
     elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
