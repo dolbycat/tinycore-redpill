@@ -593,7 +593,7 @@ function addrequiredexts() {
         cd /home/tc/redpill-load/ && ./ext-manager.sh _update_platform_exts ${SYNOMODEL} ${extension}
     done
 
-    if [ ${TARGET_PLATFORM} = "ds920p" ] || [ ${TARGET_PLATFORM} = "ds1621p" ] || [ ${TARGET_PLATFORM} = "dva1622" ] || [ ${TARGET_PLATFORM} = "ds2422p" ] || [ ${TARGET_PLATFORM} = "rs4021xsp" ]; then
+    if [ ${TARGET_PLATFORM} = "ds920p" ] || [ ${TARGET_PLATFORM} = "ds1520p" ] || [ ${TARGET_PLATFORM} = "ds1621p" ] || [ ${TARGET_PLATFORM} = "dva1622" ] || [ ${TARGET_PLATFORM} = "ds2422p" ] || [ ${TARGET_PLATFORM} = "rs4021xsp" ]; then
         patchdtc
         echo "Patch dtc is superseded by fbelavenuto dtbpatch"
     fi
