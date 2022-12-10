@@ -2831,8 +2831,8 @@ function setplatform() {
         SYNOMODEL="ds920p_$TARGET_REVISION" && MODEL="DS920+"
     elif [ "${TARGET_PLATFORM}" = "dva1622" ]; then
         SYNOMODEL="dva1622_$TARGET_REVISION" && MODEL="DVA1622"
-    elif [ "${TARGET_PLATFORM}" = "ds2422p" ]; then
-        SYNOMODEL="ds2422p_$TARGET_REVISION" && MODEL="DS2422+"
+    elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
+        SYNOMODEL="ds1520p_$TARGET_REVISION" && MODEL="DS1520+"
     elif [ "${TARGET_PLATFORM}" = "rs4021xsp" ]; then
         SYNOMODEL="rs4021xsp_$TARGET_REVISION" && MODEL="RS4021xs+"
     fi
