@@ -2443,7 +2443,7 @@ function getstaticmodule() {
         elif [ "${TARGET_PLATFORM}" = "ds1621p" ]; then
                  sudo curl -k --location --progress-bar "https://github.com/PeterSuh-Q3/rp-ext/raw/main/redpill/releases/redpill-4.4.180plus-v1000.tgz" --output /home/tc/custom-module/redpill.ko.tgz
                  sudo tar -zxvf /home/tc/custom-module/redpill.ko.tgz -C /home/tc/custom-module/
-        else [ "${TARGET_PLATFORM}" = "dva1622" ]; then
+        elif [ "${TARGET_PLATFORM}" = "dva1622" ]; then
                  sudo curl -k --location --progress-bar "https://github.com/PeterSuh-Q3/rp-ext/raw/main/redpill/releases/redpill-4.4.180plus-geminilake.tgz" --output /home/tc/custom-module/redpill.ko.tgz
                  sudo tar -zxvf /home/tc/custom-module/redpill.ko.tgz -C /home/tc/custom-module/  
       fi
