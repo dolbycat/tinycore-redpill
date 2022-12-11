@@ -593,7 +593,7 @@ function addrequiredexts() {
         cd /home/tc/redpill-load/ && ./ext-manager.sh _update_platform_exts ${SYNOMODEL} ${extension}
     done
 
-    if [ ${TARGET_PLATFORM} = "geminilake" ] || [ ${TARGET_PLATFORM} = "ds1520p" ] || [ ${TARGET_PLATFORM} = "v1000" ] || [ ${TARGET_PLATFORM} = "dva1622" ] || [ ${TARGET_PLATFORM} = "ds2422p" ]; then
+    if [ ${TARGET_PLATFORM} = "ds920p" ] || [ ${TARGET_PLATFORM} = "ds1520p" ] || [ ${TARGET_PLATFORM} = "ds1621p" ] || [ ${TARGET_PLATFORM} = "dva1622" ] || [ ${TARGET_PLATFORM} = "ds2422p" ]; then
         patchdtc
         echo "Patch dtc is superseded by fbelavenuto dtbpatch"
     fi
@@ -1512,13 +1512,13 @@ function patchdtc() {
     usbvid=$(cat user_config.json | jq '.extra_cmdline .vid' | sed -e 's/"//g' | sed -e 's/0x//g')
     loaderusb=$(lsusb | grep "${usbvid}:${usbpid}" | awk '{print $2 "-"  $4 }' | sed -e 's/://g' | sed -s 's/00//g')
 
-    if [ "${TARGET_PLATFORM}" = "geminilake" ]; then
+    if [ "${TARGET_PLATFORM}" = "ds920p" ]; then
         dtbfile="ds920p"
     elif [ "${TARGET_PLATFORM}" = "ds923p" ]; then
         dtbfile="ds923p"    
     elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
         dtbfile="ds1520p"    
-    elif [ "${TARGET_PLATFORM}" = "v1000" ]; then
+    elif [ "${TARGET_PLATFORM}" = "ds1621p" ]; then
         dtbfile="ds1621p"
     elif [ "${TARGET_PLATFORM}" = "ds2422p" ]; then
         dtbfile="ds2422p"
@@ -1542,11 +1542,11 @@ function patchdtc() {
     if [ -f /home/tc/custom-module/${dtbfile}.dts ] && [ ! -f /home/tc/custom-module/${dtbfile}.dtb ]; then
         echo "Found locally cached dts file ${dtbfile}.dts and dtb file does not exist in cache, converting dts to dtb"
         ./dtc -q -I dts -O dtb /home/tc/custom-module/${dtbfile}.dts >/home/tc/custom-module/model_${dtbfile}.dtb
-        if [ "${TARGET_PLATFORM}" = "geminilake" ]; then
+        if [ "${TARGET_PLATFORM}" = "ds920p" ]; then
            cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds920*/
         elif [ "${TARGET_PLATFORM}" = "ds1520p" ]; then
            cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds1520*/
-        elif [ "${TARGET_PLATFORM}" = "v1000" ]; then
+        elif [ "${TARGET_PLATFORM}" = "ds1621p" ]; then
            cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/ds1621*/
         elif [ "${TARGET_PLATFORM}" = "dva1622" ]; then
            cp -vf /home/tc/custom-module/model_${dtbfile}.dtb /home/tc/redpill-load/custom/extensions/redpill-dtb-static/dva1622*/         
