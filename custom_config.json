@@ -123,7 +123,8 @@
       "add_extensions": [
         {
           "redpill-dtb-static": "https://raw.githubusercontent.com/dolbycat/rp-ext/main/redpill-dtb-static/rpext-index.json",
-          "redpill-misc": "https://github.com/pocopico/redpill-load/raw/develop/redpill-misc/rpext-index.json"         
+          "redpill-misc": "https://github.com/pocopico/redpill-load/raw/develop/redpill-misc/rpext-index.json",
+          "powersched": "https://raw.githubusercontent.com/PeterSuh-Q3/rp-ext/master/powersched/rpext-index.json"
         }
       ]
     },    
